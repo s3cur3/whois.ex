@@ -1,4 +1,6 @@
 defmodule Whois.RecordFixtures do
+  @moduledoc false
+  
   def record_fixture(domain) do
     "../fixtures/raw/#{domain}"
     |> Path.expand(__DIR__)
