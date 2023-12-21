@@ -11,6 +11,16 @@ defmodule Whois do
   @doc """
   Queries the appropriate WHOIS server for the domain.
 
+  Returns `{:ok, record}` if we were able to look up WHOIS records (at the minimum,
+  the date the domain was registered).
+
+  Note that for some TLDs (especially country-specific TLDs in the European Union),
+  WHOIS information is considered private, and the respective WHOIS servers will return
+  limited information, or even none at all (resulting in `{:error, :no_data_provided}`).
+  For this reason, it's not generally possible to distinguish between cases where the
+  domain is registered (but our WHOIS queries are blocked), versus cases where the domain
+  is not registered at all.
+
   ### Options
 
   - server: the WHOIS server to query. If not specified, we'll automatically

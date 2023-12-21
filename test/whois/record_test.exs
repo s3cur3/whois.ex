@@ -148,12 +148,7 @@ defmodule Whois.RecordTest do
     refute record.expires_at
   end
 
-  defp parse(domain) do
-    "../fixtures/raw/#{domain}"
-    |> Path.expand(__DIR__)
-    |> File.read!()
-    |> Whois.Record.parse()
-  end
+  defp parse(domain), do: Whois.RecordFixtures.parsed_record_fixture(domain)
 
   defp assert_dt(%NaiveDateTime{} = datetime, date) do
     assert NaiveDateTime.to_date(datetime) == date

@@ -11,7 +11,10 @@ defmodule Whois.Mixfile do
       elixirc_paths: elixirc_paths(Mix.env()),
       deps: deps(),
       aliases: aliases(),
-      test_coverage: [tool: ExCoveralls],
+      test_coverage: [
+        tool: ExCoveralls,
+        ignore_modules: [~r/Mix.Tasks.Whois/]
+      ],
       preferred_cli_env: [
         check: :test,
         coveralls: :test,

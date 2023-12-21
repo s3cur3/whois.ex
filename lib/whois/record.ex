@@ -134,6 +134,15 @@ defmodule Whois.Record do
   end
 
   defp parse_dt(string) do
+    with {:ok, datetime, _} <- DateTime.from_iso8601(string),
+         {:ok, utc} <- DateTime.shift_zone(datetime, "Etc/UTC") do
+      DateTime.to_naive(utc)
+    else
+      _ -> parse_naive_dt(string)
+    end
+  end
+
+  defp parse_naive_dt(string) do
     case NaiveDateTime.from_iso8601(string) do
       {:ok, datetime} -> datetime
       {:error, :invalid_format} -> parse_date_as_dt(string)

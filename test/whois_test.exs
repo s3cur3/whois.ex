@@ -38,15 +38,44 @@ defmodule WhoisTest do
   defp wait, do: Process.sleep(2500)
 end
 
+defmodule WhoisDocTest do
+  use ExUnit.Case, async: true
+  @moduletag :live
+  doctest Whois
+
+  setup do
+    wait()
+  end
+
+  defp wait, do: Process.sleep(2500)
+end
+
 defmodule WhoisSyncTest do
   # Can't be async due to the use of Patch
   use ExUnit.Case, async: false
   use Patch
 
-  @tag :live
   test "handles timeouts" do
+    Patch.patch(:gen_tcp, :connect, {:ok, %{}})
+    Patch.patch(:gen_tcp, :send, :ok)
     Patch.patch(:gen_tcp, :recv, {:error, :etimedout})
     assert Whois.lookup("google.com") == {:error, :timed_out}
+  end
+
+  test "handles usable records" do
+    Patch.patch(Whois, :lookup_raw, {:ok, Whois.RecordFixtures.record_fixture("google.com")})
+
+    assert {:ok, record} = Whois.lookup("google.com")
+    assert record.domain == "google.com"
+    assert record.created_at == ~N[1997-09-15T07:00:00]
+    assert record.expires_at == ~N[2020-09-14T04:00:00]
+    assert record.updated_at == ~N[2017-09-07T15:50:36]
+
+    for type <- [:administrator, :registrant, :technical] do
+      assert record.contacts[type].organization == "Google Inc."
+      assert record.contacts[type].state == "CA"
+      assert record.contacts[type].country == "US"
+    end
   end
 
   test "lookup/2 provides a clear error for TLDs that aren't supported" do
