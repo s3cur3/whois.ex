@@ -16,15 +16,19 @@ defmodule Whois.Record do
     :contacts
   ]
 
+  defguard is_empty(record)
+           when (not is_binary(record.domain) or byte_size(record.domain) == 0) and
+                  is_nil(record.created_at)
+
   @type t :: %__MODULE__{
-          domain: String.t(),
+          domain: String.t() | nil,
           raw: String.t(),
           nameservers: [String.t()],
           status: [String.t()],
-          registrar: String.t(),
-          created_at: NaiveDateTime.t(),
-          updated_at: NaiveDateTime.t(),
-          expires_at: NaiveDateTime.t(),
+          registrar: String.t() | nil,
+          created_at: NaiveDateTime.t() | nil,
+          updated_at: NaiveDateTime.t() | nil,
+          expires_at: NaiveDateTime.t() | nil,
           contacts: %{
             registrant: Contact.t(),
             administrator: Contact.t(),

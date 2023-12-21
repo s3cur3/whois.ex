@@ -31,11 +31,8 @@ defmodule WhoisTest do
   end
 
   @tag :live
-  test "lookup/2 falls back to IANA for TLDs that aren't amenable to robots" do
-    assert {:ok, record} = Whois.lookup("michaelruoss.ch")
-
-    # This is a quirk of the IANA WHOIS server
-    assert record.domain == "CH"
+  test "lookup/2 provides a clear error for live TLDs that aren't amenable to robots" do
+    assert {:error, :no_data_provided} = Whois.lookup("michaelruoss.ch")
   end
 
   defp wait, do: Process.sleep(2500)
@@ -50,5 +47,10 @@ defmodule WhoisSyncTest do
   test "handles timeouts" do
     Patch.patch(:gen_tcp, :recv, {:error, :etimedout})
     assert Whois.lookup("google.com") == {:error, :timed_out}
+  end
+
+  test "lookup/2 provides a clear error for TLDs that aren't supported" do
+    Patch.patch(Whois, :lookup_raw, {:ok, "Automated lookup for this domain is blocked."})
+    assert {:error, :no_data_provided} = Whois.lookup("unsupported.com")
   end
 end

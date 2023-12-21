@@ -2,10 +2,11 @@ defmodule Whois do
   @moduledoc """
   A WHOIS client for Elixir.
   """
+  import Whois.Record, only: [is_empty: 1]
   alias Whois.Record
   alias Whois.Server
 
-  @type lookup_option :: {:server, String.t() | Server.t()} | {:fall_back_to_iana?, boolean}
+  @type lookup_option :: {:server, String.t() | Server.t()}
 
   @doc """
   Queries the appropriate WHOIS server for the domain.
@@ -14,35 +15,25 @@ defmodule Whois do
 
   - server: the WHOIS server to query. If not specified, we'll automatically
     choose the appropriate server.
-  - fall_back_to_iana?: whether to fall back to the IANA WHOIS server if looking
-      up the domain on the specified or default server fails. Defaults to `true`
-      whenever the `:server` is not specified.
 
   ### Examples
 
       iex> {:ok, %Whois.Record{domain: "google.com"} = record} = Whois.lookup("google.com")
       iex> NaiveDateTime.after?(record.expires_at, NaiveDateTime.utc_now())
       true
+
+      iex> Whois.lookup("scha.ch")
+      {:error, :no_data_provided}
   """
   @spec lookup(String.t(), [lookup_option]) ::
-          {:ok, Record.t()} | {:error, :timed_out | :unsupported_tld}
+          {:ok, Record.t()} | {:error, :no_data_provided | :timed_out | :unsupported_tld}
   def lookup(domain, opts \\ []) do
     with {:ok, raw} <- lookup_raw(domain, opts),
-         %Record{domain: d} = record when byte_size(d) > 0 <- Record.parse(raw) do
+         %Record{} = record when not is_empty(record) <- Record.parse(raw) do
       {:ok, record}
     else
-      %Record{} = record ->
-        # We connected to the server, but got a totally garbage raw response, like:
-        # > Requests of this client are not permitted. Please use https://www.nic.ch/whois/ for queries."
-        # Unless the server was specified, we'll fall back to the IANA server.
-        if opts[:fall_back_to_iana?] || is_nil(opts[:server]) do
-          lookup(domain, server: "whois.iana.org", fall_back_to_iana?: false)
-        else
-          {:ok, record}
-        end
-
-      other ->
-        other
+      %Record{} -> {:error, :no_data_provided}
+      other -> other
     end
   end
 
