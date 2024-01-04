@@ -60,7 +60,7 @@ defmodule Whois.Record do
           {key, value} ->
             case String.downcase(key) do
               n when n in ["domain name", "domain"] ->
-                %{record | domain: value}
+                %{record | domain: String.downcase(value)}
 
               ns when ns in ["name server", "nserver"] ->
                 %{record | nameservers: record.nameservers ++ [value]}
