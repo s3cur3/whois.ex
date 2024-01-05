@@ -54,7 +54,7 @@ defmodule WhoisTest do
   test "lookup/1 can check .de domains" do
     assert {:ok, record} = Whois.lookup("spiegel.de")
     assert record.domain == "spiegel.de"
-    assert record.status == "connect"
+    assert record.status == ["connect"]
 
     assert record.nameservers == [
              "pns101.cloudns.net",
