@@ -12,7 +12,7 @@ on:
 jobs:
   build:
     name: Build and test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
       MIX_ENV: test
     strategy:
@@ -53,21 +53,6 @@ jobs:
             otp: "22.3"
           - elixir: "1.15.5"
             otp: "23.3.4"
-
-    # Remove if you don't need a database
-    services:
-      db:
-        image: postgis/postgis:13-3.1
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: server_test
-        ports: ["5432:5432"]
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
       - name: Checkout repository
