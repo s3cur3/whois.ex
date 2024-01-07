@@ -20,16 +20,6 @@ jobs:
         elixir: ["1.13.4", "1.14.4", "1.15.7", "1.16.0"]
         otp: ["24.3.4", "25.3.2", "26.2.1"]
         exclude:
-          # Elixir 1.11 doesn't support the latest OTP
-          - elixir: "1.11.4"
-            otp: "25.3.2"
-          - elixir: "1.11.4"
-            otp: "26.2.1"
-          # Elixir 1.12 doesn't support the latest OTP
-          - elixir: "1.12.3"
-            otp: "25.3.2"
-          - elixir: "1.12.3"
-            otp: "26.2.1"
           # Elixir 1.13 doesn't support the latest OTP
           - elixir: "1.13.4"
             otp: "26.2.1"
