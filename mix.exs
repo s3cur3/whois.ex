@@ -60,7 +60,7 @@ defmodule Whois.Mixfile do
       {:date_time_parser, "~> 1.2"},
       {:dialyxir, "~> 1.2", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.18.0", only: [:dev, :test], runtime: false},
-      {:recode, "~> 0.6", only: [:dev, :test]},
+      {:recode, "~> 0.6", only: [:dev, :test], optional: true},
       {:patch, "~> 0.13.0", only: [:test]}
     ]
   end
